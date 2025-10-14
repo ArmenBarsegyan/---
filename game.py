@@ -9,6 +9,7 @@ def guess_number():
     secret_number = random.randint(1, 100)
     attempts = 0
     max_attempts = 10
+    previous_guess = None
 
     print(f"У тебя есть {max_attempts} попыток!")
 
@@ -19,18 +20,40 @@ def guess_number():
             attempts += 1
 
             # Проверяем угадал ли пользователь
-            if guess < secret_number:
-                print("Слишком маленькое число! Попробуй еще.")
-            elif guess > secret_number:
-                print("Слишком большое число! Попробуй еще.")
-            else:
+            if guess == secret_number:
                 print(f"\n🎉 Поздравляю! Ты угадал число {secret_number} за {attempts} попыток!")
+                if attempts <= 3:
+                    print("⭐ Ты настоящий экстрасенс!")
+                elif attempts <= 6:
+                    print("👍 Отличный результат!")
                 break
+            elif guess < secret_number:
+                print("Слишком маленькое число! Попробуй еще.")
+            else:
+                print("Слишком большое число! Попробуй еще.")
+
+            # Добавляем подсказку о том, ближе ли текущая попытка к предыдущей
+            if previous_guess is not None:
+                current_diff = abs(guess - secret_number)
+                previous_diff = abs(previous_guess - secret_number)
+                if current_diff < previous_diff:
+                    print("🔥 Ты стал ближе к цели!")
+                elif current_diff > previous_diff:
+                    print("❌ Ты отдалился от цели...")
+
+            previous_guess = guess
 
             # Подсказка о количестве оставшихся попыток
             remaining = max_attempts - attempts
             if remaining > 0:
                 print(f"Осталось попыток: {remaining}")
+
+                # Добавляем небольшую подсказку на середине игры
+                if remaining == max_attempts // 2:
+                    if secret_number % 2 == 0:
+                        print("💡 Подсказка: число четное!")
+                    else:
+                        print("💡 Подсказка: число нечетное!")
             else:
                 print(f"\n💥 К сожалению, попытки закончились! Я загадал число {secret_number}")
 
