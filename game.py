@@ -25,6 +25,16 @@ def choose_difficulty():
             print("Введи число от 1 до 4!")
 
 
+def display_history(attempts_history, secret_number):
+    """Отображает историю попыток"""
+    print("\n📊 История твоих попыток:")
+    print("-" * 40)
+    for i, (attempt_num, guess, difference) in enumerate(attempts_history, 1):
+        status = "🎯 ПОПАДАНИЕ!" if difference == 0 else f"отклонение: {difference}"
+        print(f"{attempt_num:2d}. Число: {guess:3d} | {status}")
+    print("-" * 40)
+
+
 def guess_number():
     print("Добро пожаловать в игру 'Угадай число'!")
     print("Я загадал число от 1 до 100. Попробуй угадать!")
@@ -35,7 +45,8 @@ def guess_number():
     secret_number = random.randint(1, 100)
     attempts = 0
     previous_guess = None
-    score = initial_score  # Начальный счет зависит от сложности
+    score = initial_score
+    attempts_history = []  # Список для хранения истории попыток
 
     print(f"\nУ тебя есть {max_attempts} попыток!")
     print(f"Твой начальный счет: {score} очков")
@@ -48,11 +59,18 @@ def guess_number():
             # Штраф за каждую попытку (зависит от сложности)
             score -= 10 if max_attempts <= 5 else 5
 
+            # Добавляем попытку в историю
+            difference = abs(guess - secret_number)
+            attempts_history.append((attempts, guess, difference))
+
             if guess == secret_number:
                 bonus = max_attempts - attempts  # Бонус за оставшиеся попытки
                 score += bonus * 15
                 print(f"\n🎉 Поздравляю! Ты угадал число {secret_number} за {attempts} попыток!")
                 print(f"🏆 Твой финальный счет: {score} очков")
+
+                # Показываем полную историю при победе
+                display_history(attempts_history, secret_number)
 
                 # Разные сообщения в зависимости от сложности
                 if max_attempts <= 3:
@@ -86,6 +104,10 @@ def guess_number():
                 print(f"Осталось попыток: {remaining}")
                 print(f"Текущий счет: {score} очков")
 
+                # Показываем краткую историю каждые 3 попытки
+                if attempts % 3 == 0:
+                    print(f"\n📈 Последние попытки: {[h[1] for h in attempts_history[-3:]]}")
+
                 # Добавляем подсказки в зависимости от сложности
                 if remaining == max_attempts // 2:
                     if max_attempts <= 5:  # Только на сложных уровнях
@@ -98,6 +120,8 @@ def guess_number():
             else:
                 print(f"\n💥 К сожалению, попытки закончились! Я загадал число {secret_number}")
                 print(f"🏆 Твой финальный счет: {score} очков")
+                # Показываем историю при проигрыше
+                display_history(attempts_history, secret_number)
 
         except ValueError:
             print("Пожалуйста, введи целое число!")
